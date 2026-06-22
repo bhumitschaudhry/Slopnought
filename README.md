@@ -1,6 +1,6 @@
 # Slopnought
 
-A code maintainability skill that makes AI-generated code understandable, extensible, testable, secure, and maintainable. Works across multiple coding agents via a three-layer architecture.
+A code maintainability skill that makes AI-generated code understandable, extensible, testable, secure, and maintainable. Works across 11 coding agents via a three-layer architecture.
 
 ## What it does
 
@@ -32,6 +32,12 @@ Or via marketplace:
 /plugins
 # Search "slopnought" → Install Plugin
 ```
+
+### Codex App
+
+Click Plugins → Coding → Slopnought → `+`
+
+(The Codex App shares the `.codex-plugin/` directory with Codex CLI.)
 
 ### Cursor
 
@@ -66,10 +72,32 @@ Add to your `opencode.json`:
 }
 ```
 
+To pin a version:
+
+```json
+{
+  "plugin": [
+    "slopnought@git+https://github.com/BhumitChaudhry/Slopnought.git#v1.0.0"
+  ]
+}
+```
+
 ### Pi
 
 ```bash
 pi install git:github.com/BhumitChaudhry/Slopnought
+```
+
+### Antigravity
+
+```bash
+agy plugin install https://github.com/BhumitChaudhry/Slopnought
+```
+
+Or use the bundled installer script:
+
+```bash
+bash install-agy.sh
 ```
 
 ### Kimi Code
@@ -78,12 +106,24 @@ pi install git:github.com/BhumitChaudhry/Slopnought
 /plugins install https://github.com/BhumitChaudhry/Slopnought
 ```
 
+Or via marketplace: `/plugins` → Search "Slopnought" → Install.
+
 ### Factory Droid
 
 ```bash
 droid plugin marketplace add https://github.com/BhumitChaudhry/Slopnought
 droid plugin install slopnought@slopnought
 ```
+
+(Factory Droid consumes the Claude Code plugin format — no separate files needed.)
+
+### Any other coding agent
+
+```
+install this skill: https://github.com/BhumitChaudhry/Slopnought
+```
+
+Most modern coding agents can interpret this instruction and install the skill automatically. If not, clone the repo and point the agent's context to `skills/slopnought/SKILL.md`. See [Installation docs](./docs/installation.md#any-other-coding-agent) for details.
 
 ## How it works
 
@@ -100,12 +140,29 @@ Layer 2: Tool Mapping (per-agent)
   Translates "read a file" → Read / read / cat
 
 Layer 3: Bootstrap Injector (per-agent)
-  hooks/ (Shape A: shell-hook)
-  .opencode/plugins/ (Shape B: in-process)
-  GEMINI.md (Shape C: instructions file)
+  hooks/ (Shape A: shell-hook)         → Claude, Codex, Cursor, Copilot, Factory Droid
+  .opencode/plugins/ (Shape B: in-proc) → OpenCode, Pi
+  GEMINI.md (Shape C: context file)    → Gemini, Antigravity
 ```
 
 At session start, the bootstrap injector reads the skill content, wraps it in `<EXTREMELY_IMPORTANT>` tags, appends the agent-specific tool mapping, and injects it into the model's context. This teaches the model that Slopnought exists and how to use it.
+
+## Supported agents
+
+| Agent | Install mechanism | Bootstrap shape | Files |
+|---|---|---|---|
+| **Claude Code** | `/plugin install` | Shell-hook (A) | `.claude-plugin/`, `hooks/hooks.json` |
+| **Codex CLI** | `/plugins` → search | Shell-hook (A) | `.codex-plugin/`, `hooks/hooks-codex.json` |
+| **Codex App** | GUI marketplace | Shell-hook (A) | Shares `.codex-plugin/` with Codex CLI |
+| **Cursor** | `/add-plugin` | Shell-hook (A) | `.cursor-plugin/`, `hooks/hooks-cursor.json` |
+| **Copilot CLI** | `copilot plugin install` | Shell-hook (A) | Reuses Claude Code's hook script |
+| **Gemini CLI** | `gemini extensions install` | Context file (C) | `gemini-extension.json`, `GEMINI.md` |
+| **OpenCode** | `opencode.json` plugin | In-process (B) | `.opencode/plugins/slopnought.js` |
+| **Pi** | `pi install` | In-process (B) | `.pi/extensions/slopnought.ts` |
+| **Antigravity** | `agy plugin install` | Context file (C) | `antigravity-plugin/`, `ANTIGRAVITY.md` |
+| **Kimi Code** | `/plugins install` | Native skill load | `.kimi-plugin/plugin.json` |
+| **Factory Droid** | `droid plugin install` | Shell-hook (A) | Reuses `.claude-plugin/` |
+| **Any other agent** | `install this skill: [url]` | Manual / auto | `skills/slopnought/SKILL.md` |
 
 ## The core question
 
@@ -137,7 +194,9 @@ skills/slopnought/
     gemini-tools.md               # Tool mapping for Gemini CLI
     opencode-tools.md             # Tool mapping for OpenCode
     pi-tools.md                   # Tool mapping for Pi
+    antigravity-tools.md          # Tool mapping for Antigravity
     kimi-tools.md                 # Tool mapping for Kimi Code
+    factory-droid-tools.md        # Tool mapping for Factory Droid
   assets/
     adr-template.md               # ADR template
 hooks/
@@ -150,15 +209,19 @@ hooks/
   session-start-codex.py          # Python fallback (Codex)
   run-hook.cmd                    # Windows polyglot wrapper
 .claude-plugin/plugin.json        # Claude Code manifest
-.codex-plugin/plugin.json         # Codex CLI manifest
+.codex-plugin/plugin.json         # Codex CLI/App manifest
 .cursor-plugin/plugin.json        # Cursor manifest
 .kimi-plugin/plugin.json          # Kimi Code manifest
+.antigravity-plugin/plugin.json   # Antigravity manifest
+install-agy.sh                    # Antigravity installer script
+ANTIGRAVITY.md                    # Antigravity context file (generated bootstrap)
 .opencode/
   plugins/slopnought.js           # OpenCode plugin module
   INSTALL.md                      # OpenCode install docs
 .pi/extensions/slopnought.ts      # Pi extension module
 gemini-extension.json             # Gemini CLI manifest
 GEMINI.md                         # Gemini context file
+ANTIGRAVITY.md                    # Antigravity context file
 AGENTS.md                         # Agent instructions
 CLAUDE.md                         # Contributor guidelines
 package.json                      # Package manifest
