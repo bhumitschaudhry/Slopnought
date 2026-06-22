@@ -1,5 +1,7 @@
 # Slopnought
 
+> *Like a Dreadnought, your code should still be standing — and understandable — centuries later.*
+
 A code maintainability skill that makes AI-generated code understandable, extensible, testable, secure, and maintainable. Works across 11 coding agents via a three-layer architecture.
 
 ## What it does
@@ -12,6 +14,8 @@ Slopnought turns maintainability into a first-class requirement. Instead of code
 - **Codebase refactoring mode** — invoked via `/slopnought-audit`. Scans an existing codebase for architectural weaknesses, code smells, duplication, missing tests, undocumented business logic, and security issues, then produces a prioritized remediation plan.
 
 ## Installation
+
+Pick your agent and run the corresponding command. Each installs the skill and wires the bootstrap so it activates automatically at session start.
 
 ### Claude Code
 
@@ -35,9 +39,9 @@ Or via marketplace:
 
 ### Codex App
 
-Click Plugins → Coding → Slopnought → `+`
+Click **Plugins → Coding → Slopnought → `+`**
 
-(The Codex App shares the `.codex-plugin/` directory with Codex CLI.)
+The Codex App shares the `.codex-plugin/` directory with Codex CLI.
 
 ### Cursor
 
@@ -45,7 +49,7 @@ Click Plugins → Coding → Slopnought → `+`
 /add-plugin slopnought
 ```
 
-Or search in the plugin marketplace.
+Or search **"Slopnought"** in the plugin marketplace.
 
 ### GitHub Copilot CLI
 
@@ -106,7 +110,7 @@ bash install-agy.sh
 /plugins install https://github.com/BhumitChaudhry/Slopnought
 ```
 
-Or via marketplace: `/plugins` → Search "Slopnought" → Install.
+Or via marketplace: `/plugins` → Search **"Slopnought"** → Install.
 
 ### Factory Droid
 
@@ -115,15 +119,17 @@ droid plugin marketplace add https://github.com/BhumitChaudhry/Slopnought
 droid plugin install slopnought@slopnought
 ```
 
-(Factory Droid consumes the Claude Code plugin format — no separate files needed.)
+Factory Droid consumes the Claude Code plugin format — no separate files needed.
 
 ### Any other coding agent
 
+Paste this prompt into your agent's context:
+
 ```
-install this skill: https://github.com/BhumitChaudhry/Slopnought
+Load the Slopnought maintainability skill from https://github.com/BhumitChaudhry/Slopnought
 ```
 
-Most modern coding agents can interpret this instruction and install the skill automatically. If not, clone the repo and point the agent's context to `skills/slopnought/SKILL.md`. See [Installation docs](./docs/installation.md#any-other-coding-agent) for details.
+Most modern agents will fetch and activate the skill automatically. If not, clone the repo and point your agent's context at `skills/slopnought/SKILL.md` directly. See the [installation docs](./docs/installation.md#any-other-coding-agent) for details.
 
 ## How it works
 
@@ -162,13 +168,15 @@ At session start, the bootstrap injector reads the skill content, wraps it in `<
 | **Antigravity** | `agy plugin install` | Context file (C) | `antigravity-plugin/`, `ANTIGRAVITY.md` |
 | **Kimi Code** | `/plugins install` | Native skill load | `.kimi-plugin/plugin.json` |
 | **Factory Droid** | `droid plugin install` | Shell-hook (A) | Reuses `.claude-plugin/` |
-| **Any other agent** | `install this skill: [url]` | Manual / auto | `skills/slopnought/SKILL.md` |
+| **Any other agent** | Prompt-based load | Manual / auto | `skills/slopnought/SKILL.md` |
 
 ## The core question
 
 Before writing or changing a single line, and again before calling the work done:
 
 > If a competent developer who has never seen this project opened this file with no other context, would they understand what it does, why it exists, how it connects to the rest of the system, how to verify it works, and what they'd risk by changing it?
+
+*If the honest answer is no — entombed in armor or not — the work isn't finished.*
 
 ## Key concepts
 
@@ -221,7 +229,6 @@ ANTIGRAVITY.md                    # Antigravity context file (generated bootstra
 .pi/extensions/slopnought.ts      # Pi extension module
 gemini-extension.json             # Gemini CLI manifest
 GEMINI.md                         # Gemini context file
-ANTIGRAVITY.md                    # Antigravity context file
 AGENTS.md                         # Agent instructions
 CLAUDE.md                         # Contributor guidelines
 package.json                      # Package manifest
