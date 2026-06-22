@@ -74,7 +74,7 @@ Before writing code, and again before considering the work complete, ask:
 
 > If a competent developer who has never seen this project opened this file today, would they understand what it does, why it exists, how it fits into the system, how to verify it works, and what risks they introduce by changing it?
 
-If the answer is no, the implementation is not finished.
+If the answer is no, the implementation is not finished—even in death, your code should still serve.
 
 ---
 
@@ -132,11 +132,68 @@ skills/
 
 ---
 
-## Using Slopnought
+## Installation
 
-Add the contents of `skills/slopnought/SKILL.md` to your coding agent's system prompt, instructions, memory, or skill mechanism.
+Choose your agent to install the skill and automatically wire the bootstrap at session start:
 
-Most modern coding agents support some form of reusable instruction loading. Slopnought is intentionally tool-agnostic and can be adapted to any agent environment.
+### Claude Code
+```bash
+/plugin install slopnought@claude-plugins-official
+```
+
+### Codex CLI & App
+* **CLI:** `/plugins` → Search `slopnought` → Install
+* **App:** Click **Plugins** → **Coding** → **Slopnought** → **`+`**
+
+### Cursor
+```bash
+/add-plugin slopnought
+```
+
+### GitHub Copilot CLI
+```bash
+copilot plugin marketplace add BhumitChaudhry/slopnought-marketplace
+copilot plugin install slopnought@slopnought-marketplace
+```
+
+### Gemini CLI
+```bash
+gemini extensions install https://github.com/BhumitChaudhry/Slopnought
+```
+
+### OpenCode
+Add to `opencode.json`:
+```json
+{
+  "plugin": ["slopnought@git+https://github.com/BhumitChaudhry/Slopnought.git"]
+}
+```
+
+### Pi
+```bash
+pi install git:github.com/BhumitChaudhry/Slopnought
+```
+
+### Antigravity
+```bash
+agy plugin install https://github.com/BhumitChaudhry/Slopnought
+```
+
+### Kimi Code
+```bash
+/plugins install https://github.com/BhumitChaudhry/Slopnought
+```
+
+### Factory Droid
+```bash
+droid plugin install slopnought@slopnought
+```
+
+### Other Agents
+Provide this prompt to your agent:
+```text
+Load the Slopnought maintainability skill from https://github.com/BhumitChaudhry/Slopnought
+```
 
 ---
 
