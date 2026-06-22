@@ -1,0 +1,29 @@
+{
+  "name": "slopnought",
+  "version": "1.0.0",
+  "description": "Code maintainability skill — makes generated code understandable, extensible, testable, secure, and maintainable across multiple coding agents.",
+  "main": ".opencode/plugins/slopnought.js",
+  "author": "Bhumit Chaudhry",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BhumitChaudhry/Slopnought.git"
+  },
+  "keywords": [
+    "code-quality",
+    "maintainability",
+    "llm",
+    "ai-coding",
+    "claude",
+    "codex",
+    "cursor",
+    "gemini",
+    "opencode",
+    "plugin",
+    "skill"
+  ],
+  "pi": {
+    "extensions": ["./.pi/extensions/slopnought.ts"],
+    "skills": ["./skills"]
+  }
+}

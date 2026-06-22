@@ -1,0 +1,18 @@
+# Slopnought — source skill archive (not part of the distributed skill)
+maintainability-guardian (1).skill
+maintainability-guardian (1).skill.zip
+
+# Tool config
+.commandcode/
+
+# Temp files
+temp_skill/
+temp_skill.zip
+extracted_skill/
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db

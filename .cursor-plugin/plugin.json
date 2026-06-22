@@ -1,0 +1,8 @@
+{
+  "name": "slopnought",
+  "description": "Code maintainability skill — makes generated code understandable, extensible, testable, secure, and maintainable. Includes code generation mode, codebase refactoring/audit mode, architecture decision records, and anti-pattern prevention.",
+  "version": "1.0.0",
+  "author": "Bhumit Chaudhry",
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks-cursor.json"
+}

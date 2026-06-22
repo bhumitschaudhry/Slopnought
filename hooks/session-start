@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# Slopnought — session-start bootstrap script
+# Reads the skill content and emits JSON the harness ingests into model context.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PLUGIN_ROOT="$(dirname "$SCRIPT_DIR")"
+
+SKILL_FILE="${PLUGIN_ROOT}/skills/slopnought/SKILL.md"
+TOOL_MAP_FILE="${PLUGIN_ROOT}/skills/slopnought/references/claude-code-tools.md"
+
+if [ ! -f "$SKILL_FILE" ]; then
+  echo '{"error": "slopnought skill file not found"}' >&2
+  exit 1
+fi
+
+SKILL_CONTENT=$(cat "$SKILL_FILE")
+
+# Strip YAML frontmatter (lines between --- delimiters)
+SKILL_BODY=$(echo "$SKILL_CONTENT" | sed '1,/^---$/d' | sed '1,/^---$/d')
+
+TOOL_MAP=""
+if [ -f "$TOOL_MAP_FILE" ]; then
+  TOOL_MAP=$(cat "$TOOL_MAP_FILE")
+fi
+
+# Build the bootstrap context
+BOOTSTRAP="<EXTREMELY_IMPORTANT>
+You have Slopnought installed.
+
+**IMPORTANT: The slopnought skill content is included below.
+It is ALREADY LOADED - you are currently following it.
+Do NOT use the skill tool to load \"slopnought\" again - that would be redundant.**
+
+${SKILL_BODY}
+
+${TOOL_MAP}
+</EXTREMELY_IMPORTANT>"
+
+# Detect agent and emit appropriate JSON shape
+if [ -n "${COPILOT_CLI:-}" ] && [ -z "${CLAUDE_PLUGIN_ROOT:-}" ]; then
+  # Copilot CLI — flat additionalContext
+  printf '{"additionalContext": "%s"}' "$(echo "$BOOTSTRAP" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read()))')"
+else
+  # Claude Code — nested hookSpecificOutput
+  printf '{"hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": "%s"}}' "$(echo "$BOOTSTRAP" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read()))')"
+fi

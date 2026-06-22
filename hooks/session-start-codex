@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Slopnought — Codex session-start bootstrap script
+# Variant for Codex CLI with different JSON output shape.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PLUGIN_ROOT="$(dirname "$SCRIPT_DIR")"
+
+SKILL_FILE="${PLUGIN_ROOT}/skills/slopnought/SKILL.md"
+TOOL_MAP_FILE="${PLUGIN_ROOT}/skills/slopnought/references/codex-tools.md"
+
+if [ ! -f "$SKILL_FILE" ]; then
+  echo '{"error": "slopnought skill file not found"}' >&2
+  exit 1
+fi
+
+SKILL_CONTENT=$(cat "$SKILL_FILE")
+SKILL_BODY=$(echo "$SKILL_CONTENT" | sed '1,/^---$/d' | sed '1,/^---$/d')
+
+TOOL_MAP=""
+if [ -f "$TOOL_MAP_FILE" ]; then
+  TOOL_MAP=$(cat "$TOOL_MAP_FILE")
+fi
+
+BOOTSTRAP="<EXTREMELY_IMPORTANT>
+You have Slopnought installed.
+
+**IMPORTANT: The slopnought skill content is included below.
+It is ALREADY LOADED - you are currently following it.
+Do NOT use the skill tool to load \"slopnought\" again - that would be redundant.**
+
+${SKILL_BODY}
+
+${TOOL_MAP}
+</EXTREMELY_IMPORTANT>"
+
+# Codex uses flat additionalContext (no nesting)
+printf '{"additionalContext": "%s"}' "$(echo "$BOOTSTRAP" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read()))')"
