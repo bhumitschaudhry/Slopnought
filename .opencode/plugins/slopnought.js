@@ -7,6 +7,7 @@ const path = require("path");
 
 const PLUGIN_ROOT = path.dirname(__dirname);
 const SKILL_DIR = path.join(PLUGIN_ROOT, "skills", "slopnought");
+const AUDIT_SKILL_DIR = path.join(PLUGIN_ROOT, "skills", "slopnought-audit");
 const SKILL_FILE = path.join(SKILL_DIR, "SKILL.md");
 const TOOL_MAP_FILE = path.join(SKILL_DIR, "references", "opencode-tools.md");
 
@@ -82,6 +83,7 @@ const SlopnoughtPlugin = {
     if (hooks.config && hooks.config.skills) {
       hooks.config.skills.paths = hooks.config.skills.paths || [];
       hooks.config.skills.paths.push(SKILL_DIR);
+      hooks.config.skills.paths.push(AUDIT_SKILL_DIR);
     }
   },
 

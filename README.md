@@ -116,6 +116,7 @@ Install permanently as a global skill:
 ```bash
 git clone https://github.com/BhumitChaudhry/Slopnought.git
 cp -r Slopnought/skills/slopnought ~/.claude/skills/slopnought
+cp -r Slopnought/skills/slopnought-audit ~/.claude/skills/slopnought-audit
 ```
 
 ### 2. Google Antigravity (`agy`)

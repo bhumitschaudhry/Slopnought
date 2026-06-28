@@ -7,6 +7,7 @@ import * as path from "path";
 
 const PLUGIN_ROOT = path.resolve(import.meta.dirname, "..", "..");
 const SKILL_DIR = path.join(PLUGIN_ROOT, "skills", "slopnought");
+const AUDIT_SKILL_DIR = path.join(PLUGIN_ROOT, "skills", "slopnought-audit");
 const SKILL_FILE = path.join(SKILL_DIR, "SKILL.md");
 const TOOL_MAP_FILE = path.join(SKILL_DIR, "references", "pi-tools.md");
 
@@ -91,7 +92,7 @@ export default {
   name: "slopnought",
 
   resources_discover() {
-    return { skillPaths: [SKILL_DIR] };
+    return { skillPaths: [SKILL_DIR, AUDIT_SKILL_DIR] };
   },
 
   session_start() {
