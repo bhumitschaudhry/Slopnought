@@ -1,209 +1,69 @@
 # Slopnought
 
-> *Like a dreadnought, code should still be standing—and understandable—years after it was written.*
+An AI coding skill that makes generated code maintainable. Not "feature complete" — **future developer friendly.**
 
-Slopnought is a maintainability-first AI coding skill that helps coding agents produce code that remains understandable, testable, extensible, secure, and safe to modify long after the original implementation is finished.
-
-Instead of optimizing for "feature complete," Slopnought optimizes for "future developer friendly."
+LLMs are great at solving today's problem. They're terrible at leaving code you can safely change tomorrow. Slopnought fixes that.
 
 ---
 
-## Why Slopnought Exists
+## The Problem
 
-LLM-generated code often succeeds at solving today's problem while creating tomorrow's maintenance burden.
+You've seen this before: the AI writes code that works, then you try to modify it three weeks later and nothing makes sense. Business logic is duplicated across files. Architecture happened by accident. Nobody wrote down *why* anything was built this way.
 
-Common failure modes include:
-
-* Architecture that emerges accidentally instead of intentionally
-* Business logic duplicated across files
-* Poor naming and unclear abstractions
-* Missing rationale behind important decisions
-* Weak test coverage
-* Hidden dependencies and side effects
-* Security and validation gaps
-* Code that becomes difficult to safely change after only a few iterations
-
-Slopnought treats maintainability as a first-class requirement rather than an afterthought.
+Slopnought is a prompt-level skill that makes your coding agent think about maintainability *while it writes code*, not after.
 
 ---
 
-## Modes
+## What It Does
 
-### Code Generation Mode
+**Code Generation Mode** — active whenever your agent writes new code. It pushes for clear boundaries, good naming, explicit errors, and decisions documented with rationale.
 
-Applied whenever new code is created.
-
-The skill encourages:
-
-* Clear architectural boundaries
-* Consistent patterns and conventions
-* Explicit error handling
-* Strong validation
-* Meaningful naming
-* Documentation of intent rather than implementation
-* Testability by design
-* Minimal coupling and hidden dependencies
-
-The goal is code that another developer can understand quickly and modify confidently.
-
-### Refactoring Mode
-
-Activated using:
-
-```text
-/slopnought-audit
-```
-
-The skill reviews an existing codebase and identifies:
-
-* Architectural weaknesses
-* Code smells
-* Duplication
-* Missing tests
-* Undocumented business rules
-* Security concerns
-* Areas of excessive complexity
-
-It then produces a prioritized remediation plan focused on long-term maintainability rather than superficial cleanup.
-
----
-
-## Core Principle
-
-Before writing code, and again before considering the work complete, ask:
-
-> If a competent developer who has never seen this project opened this file today, would they understand what it does, why it exists, how it fits into the system, how to verify it works, and what risks they introduce by changing it?
-
-If the answer is no, the implementation is not finished—even in death, your code should still serve.
-
----
-
-## Key Concepts
-
-### Anti-Patterns
-
-A catalog of common failure modes found in AI-generated codebases, including:
-
-* Context-collapse architecture
-* Copy-paste business logic
-* Hidden assumptions
-* Over-abstraction
-* Under-abstraction
-* Tight coupling
-* Missing rationale
-* Test avoidance
-
-### Architecture Decision Records (ADRs)
-
-Significant architectural decisions should be documented so future contributors understand:
-
-* What decision was made
-* Why it was made
-* Alternatives considered
-* Consequences and trade-offs
-
-### Maintainability Reviews
-
-Every significant change should be evaluated for:
-
-* Clarity
-* Testability
-* Modularity
-* Security
-* Observability
-* Ease of future modification
-
----
-
-## Repository Structure
-
-```text
-skills/
-└── slopnought/
-    ├── SKILL.md
-    ├── references/
-    │   ├── anti-patterns.md
-    │   ├── code-generation-mode.md
-    │   ├── refactoring-mode.md
-    │   └── architecture-records.md
-    └── assets/
-        └── adr-template.md
-```
+**Refactoring Mode** — run `/slopnought-audit` to get a prioritized list of what's wrong with your codebase. Not a style checklist — actual architectural problems, hidden coupling, missing tests, and security gaps.
 
 ---
 
 ## Installation
 
-Choose your agent to install the skill and automatically wire the bootstrap at session start:
+Easiest way — just tell your agent:
 
-### Claude Code
-```bash
-/plugin install slopnought@claude-plugins-official
-```
-
-### Codex CLI & App
-* **CLI:** `/plugins` → Search `slopnought` → Install
-* **App:** Click **Plugins** → **Coding** → **Slopnought** → **`+`**
-
-### Cursor
-```bash
-/add-plugin slopnought
-```
-
-### GitHub Copilot CLI
-```bash
-copilot plugin marketplace add BhumitChaudhry/slopnought-marketplace
-copilot plugin install slopnought@slopnought-marketplace
-```
-
-### Gemini CLI
-```bash
-gemini extensions install https://github.com/BhumitChaudhry/Slopnought
-```
-
-### OpenCode
-Add to `opencode.json`:
-```json
-{
-  "plugin": ["slopnought@git+https://github.com/BhumitChaudhry/Slopnought.git"]
-}
-```
-
-### Pi
-```bash
-pi install git:github.com/BhumitChaudhry/Slopnought
-```
-
-### Antigravity
-```bash
-agy plugin install https://github.com/BhumitChaudhry/Slopnought
-```
-
-### Kimi Code
-```bash
-/plugins install https://github.com/BhumitChaudhry/Slopnought
-```
-
-### Factory Droid
-```bash
-droid plugin install slopnought@slopnought
-```
-
-### Other Agents
-Provide this prompt to your agent:
 ```text
 Load the Slopnought maintainability skill from https://github.com/BhumitChaudhry/Slopnought
 ```
 
+Or install permanently for **Claude Code**:
+
+```bash
+git clone https://github.com/BhumitChaudhry/Slopnought.git
+cp -r Slopnought/skills/slopnought ~/.claude/skills/slopnought
+```
+
+It'll load automatically at session start.
+
 ---
 
-## Design Goal
+## What's Inside
 
-Slopnought does not attempt to make code perfect.
+```
+skills/slopnought/
+├── SKILL.md                          # Main skill instructions
+├── references/
+│   ├── anti-patterns.md              # Common AI code failure modes
+│   ├── code-generation-mode.md       # How to write maintainable code
+│   ├── refactoring-mode.md           # How to audit existing code
+│   └── architecture-records.md       # When/how to write ADRs
+└── assets/
+    └── adr-template.md              # Template for architecture decisions
+```
 
-It attempts to make code understandable.
+---
 
-Because maintainable software is rarely the software with the fewest bugs—it is the software that can still be safely changed when requirements inevitably evolve.
+## The Core Idea
+
+Before your agent finishes writing code, ask:
+
+> Would a developer who's never seen this project understand what this does, why it exists, how to test it, and what breaks if they change it?
+
+If not, it's not done.
 
 ---
 
