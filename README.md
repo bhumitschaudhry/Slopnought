@@ -133,6 +133,7 @@ If your coding agent supports skill imports via prompt, instruct it to load the 
 ```text
 Load the Slopnought maintainability skill from https://github.com/BhumitChaudhry/Slopnought
 ```
+*Note: Once imported, the agent will automatically detect its execution platform (e.g. Antigravity or Codex CLI), read the matching tool mapping from the `references/` directory, and apply correct tool translations automatically.*
 
 ---
 
