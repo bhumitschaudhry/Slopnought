@@ -1,6 +1,5 @@
 ---
 name: slopnought
-description: Makes generated code maintainable. Use for any coding task — features, bug fixes, refactors. Two modes: code generation (active by default) and `/slopnought-audit` for scanning existing codebases.
 ---
 
 # Slopnought

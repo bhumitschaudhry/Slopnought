@@ -1,6 +1,5 @@
 ---
 name: slopnought-audit
-description: Scans a codebase for maintainability issues and produces a prioritized remediation plan.
 ---
 
 # Codebase Refactoring Mode — `/slopnought-audit`
