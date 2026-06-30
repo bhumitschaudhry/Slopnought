@@ -93,15 +93,16 @@ jobs:
         run: |
           echo "Checking file references in markdown..."
           while IFS= read -r md; do
+            dir=$(dirname "$md")
             # Match markdown links [text](path) where path looks like a file reference
-            grep -oP '\[[^\]]*\]\(\K[^)]+' "$md" 2>/dev/null | grep -v 'http' | grep -v '^#' | grep -E '\.[a-zA-Z]+$|/' | while read -r ref; do
+            refs=$(grep -oP '\[[^\]]*\]\(\K[^)]+' "$md" 2>/dev/null | grep -v 'http' | grep -v '^#' | grep -E '\.[a-zA-Z]+$|/' || true)
+            while IFS= read -r ref; do
               if [ -n "$ref" ]; then
-                dir=$(dirname "$md")
                 resolved="$dir/$ref"
                 if [ ! -e "$resolved" ]; then
                   echo "::warning file=$md::Broken reference: $ref"
                 fi
               fi
-            done
+            done <<< "$refs"
           done < <(find . -name '*.md' -not -path './.git/*')
           echo "Reference check complete."
