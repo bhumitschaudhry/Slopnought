@@ -1,6 +1,6 @@
 # Slopnought
 
-![Slopnought](assets/slopnought.png)
+<img src="assets/slopnought.png" alt="Slopnought" width="300">
 
 An AI coding skill that makes generated code maintainable. Not just "feature complete" — **future developer friendly.**
 
