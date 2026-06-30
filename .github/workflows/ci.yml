@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate-manifests:
+    name: Validate JSON Manifests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate all JSON files
+        shell: bash
+        run: |
+          echo "Checking all JSON files..."
+          ERROR=0
+          while IFS= read -r f; do
+            if ! python3 -m json.tool "$f" > /dev/null 2>&1; then
+              echo "::error file=$f::Invalid JSON"
+              ERROR=1
+            fi
+          done < <(find . -name '*.json' -not -path './.git/*' -not -path './node_modules/*')
+          if [ "$ERROR" -eq 1 ]; then exit 1; fi
+          echo "All JSON files are valid."
+
+      - name: Verify manifest referenced files exist
+        shell: bash
+        run: |
+          echo "Checking manifest file references..."
+          ERROR=0
+          for manifest in \
+            .claude-plugin/plugin.json \
+            .codex-plugin/plugin.json \
+            .cursor-plugin/plugin.json \
+            .kimi-plugin/plugin.json \
+            .opencode/package.json \
+            gemini-extension.json; do
+            if [ ! -f "$manifest" ]; then
+              echo "::error file=$manifest::Manifest not found"
+              ERROR=1
+              continue
+            fi
+            # Extract hooks paths and validate they exist
+            for key in "hooks" "skills"; do
+              value=$(python3 -c "import json,sys; d=json.load(open('$manifest')); print(d.get('$key',''))" 2>/dev/null || true)
+              if [ -n "$value" ]; then
+                # Remove leading ./
+                ref=$(echo "$value" | sed 's|^\./||')
+                if [ ! -e "$ref" ]; then
+                  echo "::error file=$manifest::Referenced path '$ref' does not exist"
+                  ERROR=1
+                fi
+              fi
+            done
+          done
+          if [ "$ERROR" -eq 1 ]; then exit 1; fi
+          echo "All manifest references are valid."
+
+  validate-skills:
+    name: Validate Skill Files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check skill files have required structure
+        shell: bash
+        run: |
+          echo "Validating skill markdown files..."
+          ERROR=0
+          while IFS= read -r skill; do
+            # Skip YAML frontmatter then check for heading
+            if ! awk '/^---$/{c++;next} c>=2' "$skill" | grep -qiE '^# '; then
+              echo "::error file=$skill::Missing top-level heading"
+              ERROR=1
+            fi
+            if [ $(wc -c < "$skill") -lt 50 ]; then
+              echo "::warning file=$skill::Skill file is suspiciously short"
+            fi
+          done < <(find skills -name 'SKILL.md')
+          if [ "$ERROR" -eq 1 ]; then exit 1; fi
+          echo "Skill validation complete."
+
+  link-check:
+    name: Check Broken References
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify local file references
+        shell: bash
+        run: |
+          echo "Checking file references in markdown..."
+          while IFS= read -r md; do
+            grep -oP '\(\K[^)]+(?=\))' "$md" 2>/dev/null | grep -v 'http' | grep -v '^#' | while read -r ref; do
+              if [ -n "$ref" ]; then
+                dir=$(dirname "$md")
+                resolved="$dir/$ref"
+                if [ ! -e "$resolved" ]; then
+                  echo "::warning file=$md::Broken reference: $ref"
+                fi
+              fi
+            done
+          done < <(find . -name '*.md' -not -path './.git/*')
+          echo "Reference check complete."
