@@ -4,32 +4,9 @@ How to add Slopnought to a new coding agent, or modify the existing integration.
 
 ## Adding to a new agent
 
-To add Slopnought to a coding agent not currently supported, you need four things:
+To add Slopnought to a coding agent not currently supported, you need three things:
 
-### 1. Tool mapping
-
-Create `skills/slopnought/references/<agent>-tools.md` with a table translating abstract actions to the agent's native tool names.
-
-Ask the running model: "List the exact machine names of every tool you can call, one per line." Use those exact names — don't guess.
-
-```markdown
-# Tool Mapping — Agent Name
-
-| Action | Agent Tool |
-|---|---|
-| Read a file | `toolname` |
-| Edit a file | `toolname` |
-| Run a shell command | `toolname` |
-| Search files by content | `toolname` |
-| Search files by name | `toolname` |
-| Create/update todos | `toolname` |
-| Dispatch a subagent | `toolname` |
-| Fetch a URL | `toolname` |
-| Ask user a question | `toolname` |
-| Invoke a skill | `toolname` |
-```
-
-### 2. Manifest
+### 1. Manifest
 
 Create a manifest file the agent recognizes. The manifest declares:
 - Plugin/extension name, version, author
@@ -47,14 +24,14 @@ Common manifest formats:
 | Instructions-file | `agentname-extension.json` | `contextFileName` |
 | Native skill | `.agentname-plugin/plugin.json` | `sessionStart.skill` |
 
-### 3. Bootstrap injection
+### 2. Bootstrap injection
 
 Choose one of three shapes based on what the agent supports:
 
 **Shape A — Shell-hook** (if the agent can run a shell command at session start):
 
 1. Create `hooks/hooks-<agent>.json` with the agent's hook config format
-2. Create or reuse `hooks/session-start` — the script reads SKILL.md, strips frontmatter, wraps in `<EXTREMELY_IMPORTANT>`, appends the tool mapping, and prints JSON
+2. Create or reuse `hooks/session-start` — the script reads SKILL.md, strips frontmatter, wraps in `<EXTREMELY_IMPORTANT>`, and prints JSON
 3. Handle the agent's expected JSON output shape
 
 **Shape B — In-process plugin** (if the agent supports JS/TS plugin modules with lifecycle callbacks):
@@ -66,11 +43,11 @@ Choose one of three shapes based on what the agent supports:
 
 **Shape C — Instructions file** (if the agent has a `contextFileName` manifest field):
 
-1. Create `AGENTNAME.md` with `@`-includes pointing to SKILL.md and the tool mapping
+1. Create `AGENTNAME.md` with `@`-include pointing to SKILL.md
 2. The harness loads this file automatically every session
 3. No hooks or code needed
 
-### 4. Verify
+### 3. Verify
 
 After creating the files:
 1. Install the plugin in the target agent
@@ -80,13 +57,6 @@ After creating the files:
 5. Test `/slopnought-audit` if the agent supports slash commands
 
 ## Modifying existing integrations
-
-### Updating tool mappings
-
-If an agent adds or renames tools:
-1. Update `skills/slopnought/references/<agent>-tools.md`
-2. For Shape B agents, also update the inline `toolMapping` in the plugin module
-3. For Shape A agents, the session-start script reads the file dynamically — no code change needed
 
 ### Updating bootstrap injection
 
@@ -100,14 +70,12 @@ If the agent changes its hook config format or JSON output shape:
 If you add a new reference file to `skills/slopnought/references/`:
 1. The file is automatically available to all agents (it's in the shared skills directory)
 2. For Shape C agents, add an `@`-include in the context file
-3. For Shape B agents, the model loads references via the agent's native read tool
-4. For Shape A agents, the model loads references via the agent's native read tool
+3. For Shape A and B agents, the model loads references via the agent's native read tool
 
 ## Code style
 
 - Skill content should remain agent-agnostic (no tool names, no agent references)
 - Reference files describe patterns, not tool-specific implementations
-- Tool mappings are agent-specific and live in `references/`
 - Bootstrap scripts handle agent-specific JSON output formats
 - Never hardcode paths — use env vars or relative paths
 
@@ -116,7 +84,6 @@ If you add a new reference file to `skills/slopnought/references/`:
 Before submitting changes:
 
 - [ ] Skill content loads in the target agent
-- [ ] Tool mapping is correct (test each tool reference)
 - [ ] Bootstrap is injected at session start
 - [ ] Dedup guard prevents double injection (if applicable)
 - [ ] Windows support works (if Shape A)

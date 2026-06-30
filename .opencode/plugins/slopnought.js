@@ -9,22 +9,8 @@ const PLUGIN_ROOT = path.dirname(__dirname);
 const SKILL_DIR = path.join(PLUGIN_ROOT, "skills", "slopnought");
 const AUDIT_SKILL_DIR = path.join(PLUGIN_ROOT, "skills", "slopnought-audit");
 const SKILL_FILE = path.join(SKILL_DIR, "SKILL.md");
-const TOOL_MAP_FILE = path.join(SKILL_DIR, "references", "opencode-tools.md");
 
 const BOOTSTRAP_MARKER = "EXTREMELY_IMPORTANT";
-
-const toolMapping = {
-  "Read a file": "read",
-  "Edit a file": "apply_patch",
-  "Run a shell command": "bash",
-  "Search files by content": "grep",
-  "Search files by name": "glob",
-  "Create/update todos": "todowrite",
-  "Dispatch a subagent": "task",
-  "Fetch a URL": "webfetch",
-  "Ask user a question": "question",
-  "Invoke a skill": "skill",
-};
 
 let cachedBootstrap = null;
 
@@ -57,11 +43,6 @@ function buildBootstrap() {
   }
   const skillBody = lines.slice(startIdx).join("\n");
 
-  let toolMap = "";
-  if (fs.existsSync(TOOL_MAP_FILE)) {
-    toolMap = fs.readFileSync(TOOL_MAP_FILE, "utf-8");
-  }
-
   cachedBootstrap = `<EXTREMELY_IMPORTANT>
 You have Slopnought installed.
 
@@ -70,8 +51,6 @@ It is ALREADY LOADED - you are currently following it.
 Do NOT use the skill tool to load "slopnought" again - that would be redundant.**
 
 ${skillBody}
-
-${toolMap}
 </EXTREMELY_IMPORTANT>`;
 
   return cachedBootstrap;

@@ -2,7 +2,7 @@
 
 ## What this is
 
-Slopnought is a code maintainability skill that makes AI-generated code understandable, extensible, testable, secure, and maintainable. It works across multiple coding agents via a three-layer architecture: harness-agnostic skills, per-agent tool mappings, and bootstrap injectors.
+Slopnought is a code maintainability skill that makes AI-generated code understandable, extensible, testable, secure, and maintainable. It works across multiple coding agents via a two-layer architecture: harness-agnostic skills and bootstrap injectors.
 
 ## How skills work
 
@@ -27,7 +27,6 @@ Slopnought is a code maintainability skill that makes AI-generated code understa
 
 To add Slopnought to a new coding agent:
 
-1. Create a tool mapping in `skills/slopnought/references/<agent>-tools.md`
-2. Create a bootstrap injection mechanism (hook, plugin, or context file)
-3. Create a manifest the agent recognizes
-4. Verify the bootstrap is injected at session start
+1. Create a bootstrap injection mechanism (hook, plugin, or context file)
+2. Create a manifest the agent recognizes
+3. Verify the bootstrap is injected at session start

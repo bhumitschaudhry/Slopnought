@@ -33,14 +33,6 @@ If the honest answer is no, the work isn't finished — regardless of whether th
 
 Don't try to hold all the reference material in your head at once — load the relevant file for the mode you're in, and re-check `anti-patterns.md` whenever something starts to feel like a shortcut.
 
-## Automatic Platform Activation (Auto-Mapping)
-
-When this skill is loaded (especially when using the universal import command), you must immediately:
-1. **Identify your host environment / platform**: Determine which coding agent platform you are running in (e.g., Google Antigravity, Claude Code, GitHub Copilot, Cursor, Gemini CLI, Codex CLI, OpenCode, Pi, Kimi, Factory Droid, etc.).
-2. **Load your platform's tool mapping**: Read the corresponding mapping file from the `references/` directory (e.g., `references/antigravity-tools.md` if running on Antigravity, `references/codex-tools.md` if on Codex CLI, `references/claude-code-tools.md` if on Claude Code, etc.).
-3. **Adopt tool translations**: Automatically translate all abstract skill actions (e.g., read, edit, search) to your host platform's native tools as described in that mapping file. Do this automatically at startup without being asked.
-
-
 ## Non-negotiable principles (apply in both modes)
 
 These five hold regardless of which mode you're in or how small the task seems:

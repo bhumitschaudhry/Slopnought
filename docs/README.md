@@ -10,7 +10,6 @@ Welcome to the Slopnought documentation. Slopnought is a code maintainability sk
 | [Architecture](./architecture.md) | The three-layer architecture that makes cross-agent skills work |
 | [Bootstrap Injection](./bootstrap.md) | How the bootstrap reaches the model in each agent |
 | [Skill Modes](./skill-modes.md) | Code generation mode and codebase refactoring mode |
-| [Tool Mappings](./tool-mappings.md) | Per-agent tool name translation tables |
 | [Architecture Decision Records](./adr-guide.md) | When and how to write ADRs using Slopnought |
 | [Contributing](./contributing.md) | Add Slopnought to a new coding agent |
 

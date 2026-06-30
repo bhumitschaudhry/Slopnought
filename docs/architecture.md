@@ -1,8 +1,8 @@
 # Architecture
 
-Slopnought works everywhere via a **three-layer architecture** that keeps skills harness-agnostic while allowing per-agent adaptation.
+Slopnought works everywhere via a **two-layer architecture** that keeps skills harness-agnostic while allowing per-agent injection.
 
-## The three layers
+## The two layers
 
 ```
 ┌────────────────────────────────────────────────────────────────────┐
@@ -18,21 +18,12 @@ Slopnought works everywhere via a **three-layer architecture** that keeps skills
 │                                                                     │
 │ Skills describe ACTIONS not tools:                                  │
 │ "read a file", "edit a file", "dispatch a subagent"                │
+│ The agent already knows its own tools.                              │
 ├────────────────────────────────────────────────────────────────────┤
-│ Layer 2: Tool Mapping (per-agent)                                  │
-│ ┌──────────────────────────────────────────────────────────────┐   │
-│ │ skills/slopnought/references/<agent>-tools.md                 │   │
-│ │                                                                │   │
-│ │ Translates action vocabulary to real tool names:               │   │
-│ │ "read a file" → read / cat / Read                              │   │
-│ │ "dispatch a subagent" → task / Agent / subagent                │   │
-│ └──────────────────────────────────────────────────────────────┘   │
-├────────────────────────────────────────────────────────────────────┤
-│ Layer 3: Bootstrap Injector (per-agent)                            │
+│ Layer 2: Bootstrap Injector (per-agent)                            │
 │ ┌──────────────────────────────────────────────────────────────┐   │
 │ │ Injected at session start, EVERY session, NO opt-in           │   │
 │ │ Wraps SKILL.md in <EXTREMELY_IMPORTANT> tags                  │   │
-│ │ Appends tool mapping                                          │   │
 │ │ Says "already loaded, don't reload"                           │   │
 │ └──────────────────────────────────────────────────────────────┘   │
 └────────────────────────────────────────────────────────────────────┘
@@ -40,13 +31,11 @@ Slopnought works everywhere via a **three-layer architecture** that keeps skills
 
 **The bootstrap is the entire integration.** Without it, skill files are inert — present on disk, never invoked. It teaches the model that skills exist, that they must be checked before acting, and how to use the harness's native tool system to load them.
 
-## Why three layers?
+## Why two layers?
 
-**Layer 1 (Skills)** stays harness-agnostic so the same skill content works everywhere. `SKILL.md` describes what to do ("read `references/code-generation-mode.md`"), not which tool to use.
+**Layer 1 (Skills)** stays harness-agnostic so the same skill content works everywhere. `SKILL.md` describes what to do ("read `references/code-generation-mode.md`"), not which tool to use. The agent already knows its own tools — no mapping needed.
 
-**Layer 2 (Tool Mapping)** translates abstract actions into concrete tool names. `Read` in Claude Code, `read` in OpenCode, `cat` in a shell — the skill doesn't know or care.
-
-**Layer 3 (Bootstrap Injector)** is the only agent-specific code. It reads the skill, wraps it, and hands it to the model at session start. Different agents need different injection mechanisms (hooks, plugins, context files), but the result is the same: the model knows Slopnought exists and how to use it.
+**Layer 2 (Bootstrap Injector)** is the only agent-specific code. It reads the skill, wraps it, and hands it to the model at session start. Different agents need different injection mechanisms (hooks, plugins, context files), but the result is the same: the model knows Slopnought exists and how to use it.
 
 ## The three integration shapes
 
@@ -79,8 +68,8 @@ Every agent fits one of three structural shapes, distinguished by *how the boots
 │ start     │          │                      │            │ user message │
 └──────────┘          │ lifecycle callbacks:  │            │ with wrapped │
                       │ - config()            │            │ SKILL.md     │
-                      │ - transform()         │            │ + tool map   │
-                      │ - resources_discover  │            └──────────────┘
+                      │ - transform()         │            └──────────────┘
+                      │ - resources_discover  │
                       │ - context()           │
                       └──────────────────────┘
 ```
@@ -98,8 +87,8 @@ Every agent fits one of three structural shapes, distinguished by *how the boots
 │ Session   │─────────→│ gemini-extension  │────────────→│ GEMINI.md         │
 │ start     │          │ .json             │             │                   │
 └──────────┘          │ contextFileName   │             │ @SKILL.md         │
-                      │ → "GEMINI.md"     │             │ @gemini-tools.md  │
-                      └──────────────────┘             └──────────────────┘
+                      │ → "GEMINI.md"     │             └──────────────────┘
+                      └──────────────────┘
 ```
 
 **Agents:** Gemini CLI, Antigravity

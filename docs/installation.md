@@ -40,9 +40,9 @@ cp -r Slopnought/skills/slopnought-audit ~/.claude/skills/slopnought-audit
 
 This copies the skill files into Claude Code's skills directory. The skill loads automatically on the next session.
 
-**Alternative: Hook-based bootstrap** (for full bootstrap injection with tool mapping)
+**Alternative: Hook-based bootstrap** (for full bootstrap injection)
 
-Point your project's Claude Code config to `hooks/hooks.json`. The hook reads `SKILL.md`, wraps it in `<EXTREMELY_IMPORTANT>` tags, appends the tool mapping, and injects it into the model context at session start.
+Point your project's Claude Code config to `hooks/hooks.json`. The hook reads `SKILL.md`, wraps it in `<EXTREMELY_IMPORTANT>` tags, and injects it into the model context at session start.
 
 **Files used:**
 - `skills/slopnought/SKILL.md` — main skill file
@@ -115,7 +115,6 @@ cp -r Slopnought/skills/slopnought-audit ~/.claude/skills/slopnought-audit
 **Files used:**
 - Reuses `.claude-plugin/plugin.json`
 - Reuses `hooks/session-start`
-- `skills/slopnought/references/copilot-tools.md` — tool mapping
 
 ---
 
@@ -127,14 +126,13 @@ cp -r Slopnought/skills/slopnought-audit ~/.claude/skills/slopnought-audit
 git clone https://github.com/BhumitChaudhry/Slopnought.git
 ```
 
-Gemini loads `GEMINI.md` at every session start via the `contextFileName` field in `gemini-extension.json`. That file contains two `@`-includes:
+Gemini loads `GEMINI.md` at every session start via the `contextFileName` field in `gemini-extension.json`. That file contains an `@`-include:
 
 ```
 @./skills/slopnought/SKILL.md
-@./skills/slopnought/references/gemini-tools.md
 ```
 
-Gemini expands these directives and injects the full content into the model's context. No hooks, no code injection — just a file the harness always loads.
+Gemini expands this directive and injects the full content into the model's context. No hooks, no code injection — just a file the harness always loads.
 
 Point your Gemini CLI config to the cloned repository's `gemini-extension.json`.
 
@@ -184,7 +182,7 @@ To pin a version:
 pi install git:github.com/BhumitChaudhry/Slopnought
 ```
 
-**How it works:** The extension registers skills via `resources_discover` → `{skillPaths}` and injects the bootstrap via the `context` event per turn. Lifecycle flags manage injection: `session_start` → inject, `session_compact` → re-inject, `agent_end` → clear. Pi has no native Skill tool — the tool mapping tells the model to load skills by reading their `SKILL.md` with the `read` tool.
+**How it works:** The extension registers skills via `resources_discover` → `{skillPaths}` and injects the bootstrap via the `context` event per turn. Lifecycle flags manage injection: `session_start` → inject, `session_compact` → re-inject, `agent_end` → clear.
 
 **Files used:**
 - `.pi/extensions/slopnought.ts` — extension module
@@ -224,10 +222,10 @@ The script builds a staging directory with the manifest, skills, and a generated
 git clone https://github.com/BhumitChaudhry/Slopnought.git
 ```
 
-Point your Kimi Code config to `Slopnought/.kimi-plugin/plugin.json`. The plugin manifest has a `sessionStart.skill` field that tells the harness which skill to auto-load at session start. The tool mapping lives in `plugin.json`'s `skillInstructions` field.
+Point your Kimi Code config to `Slopnought/.kimi-plugin/plugin.json`. The plugin manifest has a `sessionStart.skill` field that tells the harness which skill to auto-load at session start.
 
 **Files used:**
-- `.kimi-plugin/plugin.json` — manifest with `sessionStart.skill` and `skillInstructions`
+- `.kimi-plugin/plugin.json` — manifest with `sessionStart.skill`
 
 ---
 
@@ -243,7 +241,6 @@ droid plugin install Slopnought/.claude-plugin/plugin.json
 **Files used:**
 - Reuses `.claude-plugin/plugin.json`
 - Reuses `hooks/hooks.json`
-- `skills/slopnought/references/factory-droid-tools.md` — tool mapping
 
 ---
 

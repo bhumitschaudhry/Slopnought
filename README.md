@@ -14,17 +14,13 @@ AI-generated code often works today but becomes a liability tomorrow. Business l
 
 ## Architecture
 
-Slopnought utilizes a clean, three-layer integration architecture designed to work across any agent harness:
+Slopnought utilizes a clean, two-layer integration architecture designed to work across any agent harness:
 
 ```
 ┌────────────────────────────────────────────────────────┐
 │               Harness-Agnostic Skills                  │
 │  Main instructions (SKILL.md) & Ref Mode instructions   │
-└───────────────────────────┬────────────────────────────┘
-                            ▼
-┌────────────────────────────────────────────────────────┐
-│             Per-Agent Tool Mappings                    │
-│ Translates generic skill actions to agent-specific tools│
+│  The agent already knows its own tools.                 │
 └───────────────────────────┬────────────────────────────┘
                             ▼
 ┌────────────────────────────────────────────────────────┐
@@ -33,9 +29,8 @@ Slopnought utilizes a clean, three-layer integration architecture designed to wo
 └────────────────────────────────────────────────────────┘
 ```
 
-1. **Harness-Agnostic Skills**: Core rules and procedures for writing clean, structured code (`skills/slopnought/SKILL.md`).
-2. **Per-Agent Tool Mappings**: Specific instructions teaching the agent how to execute maintainability behaviors using its native tools (located in `skills/slopnought/references/*-tools.md`).
-3. **Bootstrap Injectors**: Environment-specific configuration files and hooks that inject the instructions into the agent's context (e.g., hooks, `.pi/`, `antigravity-plugin/`, or `gemini-extension.json`).
+1. **Harness-Agnostic Skills**: Core rules and procedures for writing clean, structured code (`skills/slopnought/SKILL.md`). Skills describe actions ("read a file", "edit a file") — the agent translates them to its own tools.
+2. **Bootstrap Injectors**: Environment-specific configuration files and hooks that inject the instructions into the agent's context (e.g., hooks, `.pi/`, `antigravity-plugin/`, or `gemini-extension.json`).
 
 ---
 
@@ -78,8 +73,7 @@ A compiled reference of 7 common LLM-generated code failure modes:
 │   │   ├── anti-patterns.md              # Common LLM code failure modes
 │   │   ├── code-generation-mode.md       # Detailed guide for writing new code
 │   │   ├── refactoring-mode.md           # Instructions for auditing codebases
-│   │   ├── architecture-records.md       # Guidelines for writing ADRs
-│   │   └── *-tools.md                    # Environment-specific tool mappings
+│   │   └── architecture-records.md       # Guidelines for writing ADRs
 │   └── assets/
 │       └── adr-template.md               # Markdown template for Architecture Decision Records
 ├── skills/slopnought-audit/
@@ -114,7 +108,7 @@ A compiled reference of 7 common LLM-generated code failure modes:
 
 ## Supported Environments
 
-Slopnought contains tailored tool mappings for:
+Slopnought supports:
 * **Claude Code** — clone + copy skills directory
 * **Codex CLI / Codex App** — clone + plugin config
 * **Cursor** — clone + copy skills directory

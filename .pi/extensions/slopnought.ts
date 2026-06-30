@@ -9,31 +9,11 @@ const PLUGIN_ROOT = path.resolve(import.meta.dirname, "..", "..");
 const SKILL_DIR = path.join(PLUGIN_ROOT, "skills", "slopnought");
 const AUDIT_SKILL_DIR = path.join(PLUGIN_ROOT, "skills", "slopnought-audit");
 const SKILL_FILE = path.join(SKILL_DIR, "SKILL.md");
-const TOOL_MAP_FILE = path.join(SKILL_DIR, "references", "pi-tools.md");
 
 const BOOTSTRAP_MARKER = "SLOPNOUGHT_BOOTSTRAP_INJECTED";
 
 let cachedBootstrap: string | null = null;
 let injectBootstrap = false;
-
-const toolMapping = {
-  "Read a file": "read",
-  "Edit a file": "edit",
-  "Run a shell command": "bash",
-  "Search files by content": "grep",
-  "Search files by name": "find",
-  "Create/update todos": "plan file / TODO.md",
-  "Dispatch a subagent": "(none — work in-session)",
-  "Fetch a URL": "fetch",
-  "Ask user a question": "text",
-  "Invoke a skill": "read SKILL.md directly",
-};
-
-function piToolMapping(): string {
-  return Object.entries(toolMapping)
-    .map(([action, tool]) => `- ${action} → ${tool}`)
-    .join("\n");
-}
 
 function buildBootstrap(): string | null {
   if (cachedBootstrap) return cachedBootstrap;
@@ -64,11 +44,6 @@ function buildBootstrap(): string | null {
   }
   const skillBody = lines.slice(startIdx).join("\n");
 
-  let toolMap = piToolMapping();
-  if (fs.existsSync(TOOL_MAP_FILE)) {
-    toolMap = fs.readFileSync(TOOL_MAP_FILE, "utf-8");
-  }
-
   cachedBootstrap = `<EXTREMELY_IMPORTANT>
 You have Slopnought installed.
 
@@ -77,12 +52,6 @@ It is ALREADY LOADED - you are currently following it.
 Do NOT use the skill tool to load "slopnought" again - that would be redundant.**
 
 ${skillBody}
-
-## Tool mapping for Pi
-
-When slopnought skill references tools, use these Pi equivalents:
-
-${toolMap}
 </EXTREMELY_IMPORTANT>`;
 
   return cachedBootstrap;

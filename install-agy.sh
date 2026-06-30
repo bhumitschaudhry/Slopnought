@@ -9,7 +9,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN_ROOT="$SCRIPT_DIR"
 
 SKILL_FILE="${PLUGIN_ROOT}/skills/slopnought/SKILL.md"
-TOOL_MAP_FILE="${PLUGIN_ROOT}/skills/slopnought/references/antigravity-tools.md"
 MANIFEST="${PLUGIN_ROOT}/antigravity-plugin/plugin.json"
 
 if [ ! -f "$SKILL_FILE" ]; then
@@ -40,12 +39,6 @@ fi
 SKILL_CONTENT=$(cat "$SKILL_FILE")
 SKILL_BODY=$(echo "$SKILL_CONTENT" | sed '1,/^---$/d' | sed '1,/^---$/d')
 
-# Read tool mapping
-TOOL_MAP=""
-if [ -f "$TOOL_MAP_FILE" ]; then
-  TOOL_MAP=$(cat "$TOOL_MAP_FILE")
-fi
-
 # Generate ANTIGRAVITY.md with bootstrap wrapped in EXTREMELY_IMPORTANT
 cat > "${STAGING_DIR}/ANTIGRAVITY.md" << BOOTSTRAP
 <EXTREMELY_IMPORTANT>
@@ -56,8 +49,6 @@ It is ALREADY LOADED - you are currently following it.
 Do NOT use the skill tool to load "slopnought" again - that would be redundant.**
 
 ${SKILL_BODY}
-
-${TOOL_MAP}
 </EXTREMELY_IMPORTANT>
 BOOTSTRAP
 

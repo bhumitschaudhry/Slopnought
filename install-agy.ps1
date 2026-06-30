@@ -8,7 +8,6 @@ if (-not $PluginRoot) {
 }
 
 $SkillFile = Join-Path $PluginRoot "skills\slopnought\SKILL.md"
-$ToolMapFile = Join-Path $PluginRoot "skills\slopnought\references\antigravity-tools.md"
 $ManifestFile = Join-Path $PluginRoot "antigravity-plugin\plugin.json"
 
 if (-not (Test-Path $SkillFile)) {
@@ -32,13 +31,7 @@ try {
     # Read skill content and strip YAML frontmatter
     $SkillContent = Get-Content -Raw -Path $SkillFile
     $SkillBody = $SkillContent -replace "^(?s)---\r?\n.*?\r?\n---\r?\n", ""
-    
-    # Read tool mapping
-    $ToolMap = ""
-    if (Test-Path $ToolMapFile) {
-        $ToolMap = Get-Content -Raw -Path $ToolMapFile
-    }
-    
+
     # Generate ANTIGRAVITY.md
     $Bootstrap = @"
 <EXTREMELY_IMPORTANT>
@@ -49,8 +42,6 @@ It is ALREADY LOADED - you are currently following it.
 Do NOT use the skill tool to load "slopnought" again - that would be redundant.**
 
 $SkillBody
-
-$ToolMap
 </EXTREMELY_IMPORTANT>
 "@
     

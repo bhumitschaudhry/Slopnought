@@ -15,8 +15,6 @@ It is ALREADY LOADED - you are currently following it.
 Do NOT use the skill tool to load "slopnought" again - that would be redundant.**
 
 [body of skills/slopnought/SKILL.md, frontmatter stripped]
-
-[agent-specific tool mapping]
 </EXTREMELY_IMPORTANT>
 ```
 
@@ -30,7 +28,7 @@ The `<EXTREMELY_IMPORTANT>` wrapper ensures the model treats the content as high
 
 ```
 Session start → Harness runs shell command → Script reads SKILL.md
-→ Strips frontmatter → Wraps in <EXTREMELY_IMPORTANT> → Appends tool mapping
+→ Strips frontmatter → Wraps in <EXTREMELY_IMPORTANT>
 → Prints JSON → Harness ingests into model context
 ```
 
@@ -138,8 +136,6 @@ Session start → session_start() sets injectBootstrap = true
 - `context` event fires **per turn**, not per agent step
 - Lifecycle flags manage injection across session events
 - Bootstrap inserts after any leading compaction-summary messages
-- No native Skill tool — tool mapping says to read `SKILL.md` with `read`
-- No native subagent tool — work is done in-session
 
 ---
 
@@ -153,9 +149,8 @@ Session start → session_start() sets injectBootstrap = true
 Session start → Harness reads gemini-extension.json
 → Finds contextFileName: "GEMINI.md"
 → Loads GEMINI.md
-→ Expands @-includes:
+→ Expands @-include:
     @./skills/slopnought/SKILL.md
-    @./skills/slopnought/references/gemini-tools.md
 → Injects expanded content into model context
 ```
 
@@ -163,7 +158,6 @@ Session start → Harness reads gemini-extension.json
 - No hooks, no code injection — just a file the harness always loads
 - `@`-include directives are expanded by Gemini
 - SKILL.md already contains its own `<EXTREMELY_IMPORTANT>` wrapper
-- No "already loaded" preamble needed (the content IS the active instruction set)
 
 ### Antigravity flow
 
@@ -171,7 +165,7 @@ Session start → Harness reads gemini-extension.json
 User runs: agy plugin install <url>
 → Installer creates staging directory
 → Copies skills/ and manifest
-→ Generates ANTIGRAVITY.md from SKILL.md + tool mapping
+→ Generates ANTIGRAVITY.md from SKILL.md
 → Wraps in <EXTREMELY_IMPORTANT>
 → Runs agy plugin install against staging dir
 → Harness reads manifest, finds contextFileName: "ANTIGRAVITY.md"

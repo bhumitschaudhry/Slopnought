@@ -6,6 +6,5 @@
   "skills": "./skills/",
   "sessionStart": {
     "skill": "slopnought"
-  },
-  "skillInstructions": "When slopnought skill references tools, use these Kimi Code equivalents:\n- Read a file → Read\n- Edit a file → Edit\n- Run a shell command → Bash\n- Search files by content → Grep\n- Search files by name → Glob\n- Create/update todos → TodoList\n- Dispatch a subagent → Agent\n- Fetch a URL → FetchURL\n- Ask user a question → AskUserQuestion\n- Invoke a skill → Skill"
+  }
 }
