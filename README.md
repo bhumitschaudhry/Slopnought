@@ -1,5 +1,7 @@
 # Slopnought
 
+![Slopnought](assets/slopnought.png)
+
 An AI coding skill that makes generated code maintainable. Not just "feature complete" — **future developer friendly.**
 
 LLMs are great at solving today's problem. They're terrible at leaving code you can safely change tomorrow. Slopnought fixes that by injecting maintainability constraints directly into AI agent prompts at session start.
