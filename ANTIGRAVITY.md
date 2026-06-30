@@ -9,16 +9,14 @@ Do NOT use the skill tool to load "slopnought" again - that would be redundant.*
 
 ## Why this skill exists
 
-Code that merely passes the task at hand is cheap to produce and expensive to live with. The most common way LLM-generated code fails isn't that it's wrong — it's that it works once, today, and then becomes a liability: nobody (human or agent) who reads it six weeks later can tell what it does, why it does it that way, what's safe to change, or what will quietly break if they change it anyway.
+LLM-generated code often works today but becomes a liability tomorrow — nobody (human or agent) can tell what it does, why, or what's safe to change. This skill makes maintainability a first-class requirement, on par with "does it work."
 
-This skill exists to make maintainability a **first-class requirement**, evaluated with the same seriousness as "does it work." A task isn't done when the code runs — it's done when a stranger could pick it up, understand it in minutes, change it safely, and trust the tests to catch their mistakes.
+Two modes:
 
-This skill has two modes:
+1. **Code generation mode** — active whenever the agent produces code that outlives the session.
+2. **Refactoring mode** — invoked via `/slopnought-audit`, for scanning and improving existing code.
 
-1. **Code generation mode** — for writing new code (features, modules, services, fixes). Always active implicitly whenever the agent is producing code that isn't a disposable one-off script.
-2. **Codebase refactoring mode** — invoked via `/slopnought-audit`, for analyzing and improving existing code.
-
-Read `references/code-generation-mode.md` before writing new code under this skill, and `references/refactoring-mode.md` when running an audit. Both reference `references/anti-patterns.md`, which catalogs the specific ways LLM-generated code tends to fail — read it once at the start of a session and keep it in mind throughout.
+Read the relevant reference file for the mode you're in: `references/code-generation-mode.md` for new code, `references/refactoring-mode.md` for audits. Keep `references/anti-patterns.md` in mind throughout.
 
 ## The core question
 

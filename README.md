@@ -2,15 +2,13 @@
 
 An AI coding skill that makes generated code maintainable. Not just "feature complete" — **future developer friendly.**
 
-LLMs are great at solving today's problem. They're terrible at leaving code you can safely change tomorrow. Slopnought fixes that by injecting maintainability constraints directly into AI agent prompts at the start of a coding session.
+LLMs are great at solving today's problem. They're terrible at leaving code you can safely change tomorrow. Slopnought fixes that by injecting maintainability constraints directly into AI agent prompts at session start.
 
 ---
 
 ## The Problem
 
-We have all seen this before: an AI coding agent writes code that works, but when you try to modify it a few weeks later, nothing makes sense. Business logic is duplicated across files, architecture has drifted by accident, shortcuts have papered over race conditions, and nobody documented *why* anything was built the way it was.
-
-Slopnought is a prompt-level skill that forces your coding agent to prioritize maintainability, readability, and structural integrity **while it writes code**, not as an afterthought.
+AI-generated code often works today but becomes a liability tomorrow. Business logic is duplicated, architecture drifts by accident, and nobody documented *why* anything was built the way it was. Slopnought makes maintainability a first-class requirement — enforced while code is written, not as an afterthought.
 
 ---
 
@@ -84,11 +82,32 @@ A compiled reference of 7 common LLM-generated code failure modes:
 │   │   └── *-tools.md                    # Environment-specific tool mappings
 │   └── assets/
 │       └── adr-template.md               # Markdown template for Architecture Decision Records
-├── hooks/                                # Startup hooks for auto-injecting prompts
-│   ├── session-start.py                  # Python bootstrap injector
-│   ├── run-hook.cmd                      # Windows runner script
-│   └── hooks.json                        # Hook registrations
-└── package.json                          # Plugin metadata and dependencies
+├── skills/slopnought-audit/
+│   └── SKILL.md                          # Audit mode skill instructions
+├── hooks/                                # Bootstrap injection scripts
+│   ├── session-start                     # Bash bootstrap (Claude Code / Copilot)
+│   ├── session-start.py                  # Python fallback
+│   ├── session-start-codex               # Bash bootstrap (Codex CLI)
+│   ├── session-start-codex.py            # Python fallback (Codex CLI)
+│   ├── run-hook.cmd                      # Windows polyglot wrapper
+│   ├── hooks.json                        # Claude Code hook config
+│   ├── hooks-codex.json                  # Codex CLI hook config
+│   └── hooks-cursor.json                 # Cursor hook config
+├── .claude-plugin/plugin.json            # Claude Code manifest
+├── .codex-plugin/plugin.json             # Codex CLI manifest
+├── .cursor-plugin/plugin.json            # Cursor manifest
+├── .kimi-plugin/plugin.json              # Kimi Code manifest
+├── .opencode/plugins/slopnought.js       # OpenCode plugin module
+├── .pi/extensions/slopnought.ts          # Pi extension module
+├── antigravity-plugin/plugin.json        # Antigravity manifest
+├── gemini-extension.json                 # Gemini CLI manifest
+├── GEMINI.md                             # Gemini context file (@-includes)
+├── ANTIGRAVITY.md                        # Antigravity context file
+├── AGENTS.md                             # Agent instructions
+├── install-agy.sh                        # Antigravity installer (bash)
+├── install-agy.ps1                       # Antigravity installer (PowerShell)
+├── package.json                          # Plugin metadata and dependencies
+└── docs/                                 # Documentation
 ```
 
 ---
@@ -96,45 +115,56 @@ A compiled reference of 7 common LLM-generated code failure modes:
 ## Supported Environments
 
 Slopnought contains tailored tool mappings for:
-* **Google Antigravity** (using `antigravity-tools.md`)
-* **Claude Code** (using `claude-code-tools.md`)
-* **GitHub Copilot** (using `copilot-tools.md`)
-* **Cursor** (using `cursor-tools.md`)
-* **Gemini** (using `gemini-tools.md`)
-* **Codex** (using `codex-tools.md`)
-* **OpenCode** (using `opencode-tools.md`)
-* **Pi** (using `pi-tools.md`)
-* **Kimi** (using `kimi-tools.md`)
-* **Factory Droid** (using `factory-droid-tools.md`)
+* **Claude Code** — clone + copy skills directory
+* **Codex CLI / Codex App** — clone + plugin config
+* **Cursor** — clone + copy skills directory
+* **Copilot CLI** — reuses Claude Code setup
+* **Gemini CLI** — clone + context file (auto-loaded)
+* **OpenCode** — git URL plugin spec
+* **Pi** — git URL package spec
+* **Antigravity** — clone + `agy plugin install`
+* **Kimi Code** — clone + plugin config
+* **Factory Droid** — reuses Claude Code setup
 
 ---
 
 ## Installation & Setup
 
-### 1. Claude Code
-Install permanently as a global skill:
+**Prerequisites:** Git, Bash (Git Bash on Windows), Python 3.6+
+
+### Claude Code
+
 ```bash
 git clone https://github.com/BhumitChaudhry/Slopnought.git
 cp -r Slopnought/skills/slopnought ~/.claude/skills/slopnought
 cp -r Slopnought/skills/slopnought-audit ~/.claude/skills/slopnought-audit
 ```
 
-### 2. Google Antigravity (`agy`)
-Use the automated installation script to staging and install:
+### OpenCode
+
+Add to your `opencode.json`:
+```json
+{
+  "plugin": ["slopnought@git+https://github.com/BhumitChaudhry/Slopnought.git"]
+}
+```
+
+### Pi
+
 ```bash
-./install-agy.sh
+pi install git:github.com/BhumitChaudhry/Slopnought
 ```
-This builds the staging structure and invokes `agy plugin install` to load Slopnought as a first-class plugin.
 
-### 3. Hook-based Integration (Codex, Cursor, etc.)
-Register the startup hook in your project or agent configuration pointing to `hooks/hooks.json`. During startup, the scripts in `hooks/` will dynamically combine `SKILL.md` with the corresponding `<agent>-tools.md` mapping and wrap them in `<EXTREMELY_IMPORTANT>` instructions.
+### Antigravity
 
-### 4. Universal / On-the-fly
-If your coding agent supports skill imports via prompt, instruct it to load the project:
-```text
-Load the Slopnought maintainability skill from https://github.com/BhumitChaudhry/Slopnought
+```bash
+git clone https://github.com/BhumitChaudhry/Slopnought.git
+cd Slopnought && bash install-agy.sh
 ```
-*Note: Once imported, the agent will automatically detect its execution platform (e.g. Antigravity or Codex CLI), read the matching tool mapping from the `references/` directory, and apply correct tool translations automatically.*
+
+### Other agents
+
+Clone the repo and point your agent's context files at `skills/slopnought/SKILL.md`. See [docs/installation.md](docs/installation.md) for agent-specific details.
 
 ---
 

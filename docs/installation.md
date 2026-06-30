@@ -1,26 +1,53 @@
 # Installation
 
-Slopnought supports 11 coding agents. Each agent has its own native install mechanism — Slopnought never edits your personal or global config files.
+Slopnought supports 11 coding agents. Each agent has its own install mechanism — Slopnought never edits your personal or global config files.
+
+## Prerequisites
+
+- **Git** — required for all install methods
+- **Bash** — required for shell-hook bootstrap scripts (Git Bash on Windows)
+- **Python 3.6+** — required as a fallback for JSON encoding in bootstrap hooks
+
+---
+
+## Quick reference
+
+| Agent | Install method |
+|---|---|
+| Claude Code | Clone + copy skills directory |
+| Codex CLI | Clone + plugin config |
+| Codex App | Clone + plugin config |
+| Cursor | Clone + copy skills directory |
+| Copilot CLI | Reuses Claude Code's setup |
+| Gemini CLI | Clone + context file (auto-loaded) |
+| OpenCode | Git URL plugin spec |
+| Pi | Git URL package spec |
+| Antigravity | Clone + `agy plugin install` |
+| Kimi Code | Clone + plugin config |
+| Factory Droid | Reuses Claude Code's setup |
+
+---
 
 ## Claude Code
 
-**Type:** Plugin (native marketplace)
+**Method: Clone and copy skills**
 
 ```bash
-/plugin install slopnought@claude-plugins-official
+git clone https://github.com/BhumitChaudhry/Slopnought.git
+cp -r Slopnought/skills/slopnought ~/.claude/skills/slopnought
+cp -r Slopnought/skills/slopnought-audit ~/.claude/skills/slopnought-audit
 ```
 
-Or via the Slopnought marketplace:
+This copies the skill files into Claude Code's skills directory. The skill loads automatically on the next session.
 
-```bash
-/plugin marketplace add BhumitChaudhry/slopnought-marketplace
-/plugin install slopnought@slopnought-marketplace
-```
+**Alternative: Hook-based bootstrap** (for full bootstrap injection with tool mapping)
 
-**How it works:** Claude Code loads `.claude-plugin/plugin.json`, which auto-discovers the `skills/` directory. The `hooks/hooks.json` registers a session-start shell command that reads `SKILL.md`, wraps it in `<EXTREMELY_IMPORTANT>` tags, and injects it into the model's context.
+Point your project's Claude Code config to `hooks/hooks.json`. The hook reads `SKILL.md`, wraps it in `<EXTREMELY_IMPORTANT>` tags, appends the tool mapping, and injects it into the model context at session start.
 
 **Files used:**
-- `.claude-plugin/plugin.json` — manifest
+- `skills/slopnought/SKILL.md` — main skill file
+- `skills/slopnought-audit/SKILL.md` — audit skill file
+- `.claude-plugin/plugin.json` — manifest (for hook-based install)
 - `hooks/hooks.json` — hook config
 - `hooks/session-start` — bootstrap script
 - `hooks/run-hook.cmd` — Windows wrapper
@@ -29,14 +56,13 @@ Or via the Slopnought marketplace:
 
 ## Codex CLI
 
-**Type:** Plugin (marketplace)
+**Method: Clone and configure plugin**
 
 ```bash
-/plugins
-# Search "slopnought" → Install Plugin
+git clone https://github.com/BhumitChaudhry/Slopnought.git
 ```
 
-**How it works:** Codex loads `.codex-plugin/plugin.json` and runs the session-start hook. The hook config uses `startup|resume|clear` matchers and outputs flat `additionalContext` JSON.
+Then point your Codex CLI config to `Slopnought/.codex-plugin/plugin.json`. The plugin registers a session-start hook that injects the skill content at session start.
 
 **Files used:**
 - `.codex-plugin/plugin.json` — manifest
@@ -47,9 +73,7 @@ Or via the Slopnought marketplace:
 
 ## Codex App
 
-**Type:** Plugin (GUI marketplace)
-
-Click Plugins → Coding → Slopnought → `+`
+Click **Plugins → Coding → Slopnought → `+`**
 
 The Codex App shares the `.codex-plugin/` directory with Codex CLI. Installation through the app triggers the same plugin → hooks → bootstrap pipeline.
 
@@ -57,15 +81,17 @@ The Codex App shares the `.codex-plugin/` directory with Codex CLI. Installation
 
 ## Cursor
 
-**Type:** Plugin (marketplace)
+**Method: Clone and copy skills**
 
 ```bash
-/add-plugin slopnought
+git clone https://github.com/BhumitChaudhry/Slopnought.git
+cp -r Slopnought/skills/slopnought ~/.cursor/skills/slopnought
+cp -r Slopnought/skills/slopnought-audit ~/.cursor/skills/slopnought-audit
 ```
 
-Or search in the plugin marketplace.
+**Alternative: Hook-based bootstrap**
 
-**How it works:** Cursor loads `.cursor-plugin/plugin.json`. The hook config uses `"version": 1`, lowercase `sessionStart`, and outputs `additional_context` (snake_case).
+Point your Cursor config to `hooks/hooks-cursor.json`. The hook runs the session-start script which injects the skill content.
 
 **Files used:**
 - `.cursor-plugin/plugin.json` — manifest
@@ -76,14 +102,15 @@ Or search in the plugin marketplace.
 
 ## GitHub Copilot CLI
 
-**Type:** Plugin (marketplace)
+Copilot CLI reuses Claude Code's session-start script. Detection is done by checking that `COPILOT_CLI` is set while `CLAUDE_PLUGIN_ROOT` is unset. The output is flat `additionalContext` (no nesting).
+
+**Setup:** Point Copilot CLI at the same skills directory as Claude Code:
 
 ```bash
-copilot plugin marketplace add BhumitChaudhry/slopnought-marketplace
-copilot plugin install slopnought@slopnought-marketplace
+git clone https://github.com/BhumitChaudhry/Slopnought.git
+cp -r Slopnought/skills/slopnought ~/.claude/skills/slopnought
+cp -r Slopnought/skills/slopnought-audit ~/.claude/skills/slopnought-audit
 ```
-
-**How it works:** Copilot CLI reuses Claude Code's session-start script. Detection is done by checking that `COPILOT_CLI` is set while `CLAUDE_PLUGIN_ROOT` is unset. The output is flat `additionalContext` (no nesting).
 
 **Files used:**
 - Reuses `.claude-plugin/plugin.json`
@@ -94,19 +121,13 @@ copilot plugin install slopnought@slopnought-marketplace
 
 ## Gemini CLI
 
-**Type:** Extension (not a plugin)
+**Method: Clone and use context file**
 
 ```bash
-gemini extensions install https://github.com/BhumitChaudhry/Slopnought
+git clone https://github.com/BhumitChaudhry/Slopnought.git
 ```
 
-Update:
-
-```bash
-gemini extensions update slopnought
-```
-
-**How it works:** Gemini loads `GEMINI.md` at every session start via the `contextFileName` field in `gemini-extension.json`. That file contains two `@`-includes:
+Gemini loads `GEMINI.md` at every session start via the `contextFileName` field in `gemini-extension.json`. That file contains two `@`-includes:
 
 ```
 @./skills/slopnought/SKILL.md
@@ -114,6 +135,8 @@ gemini extensions update slopnought
 ```
 
 Gemini expands these directives and injects the full content into the model's context. No hooks, no code injection — just a file the harness always loads.
+
+Point your Gemini CLI config to the cloned repository's `gemini-extension.json`.
 
 **Files used:**
 - `gemini-extension.json` — manifest
@@ -123,7 +146,7 @@ Gemini expands these directives and injects the full content into the model's co
 
 ## OpenCode
 
-**Type:** Plugin (git-backed package spec)
+**Method: Git URL plugin spec**
 
 Add to your `opencode.json`:
 
@@ -155,7 +178,7 @@ To pin a version:
 
 ## Pi
 
-**Type:** Package (native package manager)
+**Method: Git URL package spec**
 
 ```bash
 pi install git:github.com/BhumitChaudhry/Slopnought
@@ -171,17 +194,17 @@ pi install git:github.com/BhumitChaudhry/Slopnought
 
 ## Antigravity
 
-**Type:** Plugin (via `agy` CLI)
+**Method: Clone and install via `agy`**
 
 ```bash
-agy plugin install https://github.com/BhumitChaudhry/Slopnought
-```
-
-Or use the bundled installer:
-
-```bash
+git clone https://github.com/BhumitChaudhry/Slopnought.git
+cd Slopnought
 bash install-agy.sh
 ```
+
+The script builds a staging directory with the manifest, skills, and a generated `ANTIGRAVITY.md` context file, then runs `agy plugin install` against it.
+
+**Prerequisites:** The `agy` CLI must be installed and in your PATH.
 
 **How it works:** Antigravity uses a hybrid approach — the `agy plugin install` command installs the plugin, but the bootstrap rides a context file (`ANTIGRAVITY.md`). The manifest declares `contextFileName: "ANTIGRAVITY.md"`, so the harness loads it every session automatically. The `install-agy.sh` script can regenerate the context file from the current skill content.
 
@@ -189,20 +212,19 @@ bash install-agy.sh
 - `antigravity-plugin/plugin.json` — manifest
 - `ANTIGRAVITY.md` — context file (bootstrap wrapped in `<EXTREMELY_IMPORTANT>`)
 - `install-agy.sh` — installer script
+- `install-agy.ps1` — PowerShell installer
 
 ---
 
 ## Kimi Code
 
-**Type:** Plugin (marketplace + GitHub URL install)
+**Method: Clone and configure plugin**
 
 ```bash
-/plugins install https://github.com/BhumitChaudhry/Slopnought
+git clone https://github.com/BhumitChaudhry/Slopnought.git
 ```
 
-Or via marketplace: `/plugins` → Search "Slopnought" → Install.
-
-**How it works:** Kimi Code's plugin manifest has a `sessionStart.skill` field that tells the harness which skill to auto-load at session start. No hooks, no code injection — Kimi loads the skill natively. The tool mapping lives in `plugin.json`'s `skillInstructions` field.
+Point your Kimi Code config to `Slopnought/.kimi-plugin/plugin.json`. The plugin manifest has a `sessionStart.skill` field that tells the harness which skill to auto-load at session start. The tool mapping lives in `plugin.json`'s `skillInstructions` field.
 
 **Files used:**
 - `.kimi-plugin/plugin.json` — manifest with `sessionStart.skill` and `skillInstructions`
@@ -211,14 +233,12 @@ Or via marketplace: `/plugins` → Search "Slopnought" → Install.
 
 ## Factory Droid
 
-**Type:** Plugin (via `droid` CLI)
+Factory Droid reuses Claude Code's plugin format. Point the `droid` CLI at the `.claude-plugin/` directory:
 
 ```bash
-droid plugin marketplace add https://github.com/BhumitChaudhry/Slopnought
-droid plugin install slopnought@slopnought
+git clone https://github.com/BhumitChaudhry/Slopnought.git
+droid plugin install Slopnought/.claude-plugin/plugin.json
 ```
-
-**How it works:** Factory Droid doesn't need its own directory or manifest — it uses `droid plugin install` to consume the existing Claude Code plugin via its own CLI. The bootstrap injection reuses Claude Code's shell-hook mechanism.
 
 **Files used:**
 - Reuses `.claude-plugin/plugin.json`
@@ -229,22 +249,7 @@ droid plugin install slopnought@slopnought
 
 ## Any other coding agent
 
-If your coding agent isn't listed above, you can still install Slopnought using a natural language instruction:
-
-```
-install this skill: https://github.com/BhumitChaudhry/Slopnought
-```
-
-Most modern coding agents can interpret this instruction and:
-1. Clone or download the repository
-2. Discover the skill files in `skills/slopnought/`
-3. Load `SKILL.md` into the model's context
-
-If the agent has a plugin or extension system, it may use its native install mechanism. If not, the agent can read the skill files directly from the cloned repository.
-
-### Manual installation
-
-If the agent can't auto-install from a URL, you can manually set up Slopnought:
+If your coding agent isn't listed above:
 
 1. Clone the repository:
    ```bash
@@ -257,14 +262,6 @@ If the agent can't auto-install from a URL, you can manually set up Slopnought:
 
 3. The agent can then load reference files (`references/anti-patterns.md`, `references/code-generation-mode.md`, etc.) as needed during the session.
 
-### What the agent needs
-
-At minimum, the agent needs access to:
-- `skills/slopnought/SKILL.md` — the main skill file
-- `skills/slopnought/references/` — reference docs loaded on demand
-
-The agent's native read/edit tools will handle loading these files when the skill instructs the model to read them.
-
 ---
 
 ## Uninstalling
@@ -273,13 +270,13 @@ Remove Slopnought using the same mechanism you installed it with:
 
 | Agent | Uninstall |
 |---|---|
-| Claude Code | `/plugin uninstall slopnought` |
-| Codex CLI | `/plugins` → search → Uninstall |
-| Cursor | Remove via plugin manager |
-| Copilot CLI | `copilot plugin uninstall slopnought` |
-| Gemini CLI | `gemini extensions uninstall slopnought` |
-| OpenCode | Remove entry from `opencode.json` `plugin` array |
+| Claude Code | Remove `~/.claude/skills/slopnought` and `~/.claude/skills/slopnought-audit` |
+| Codex CLI | Remove the plugin config pointing to `.codex-plugin/` |
+| Cursor | Remove `~/.cursor/skills/slopnought` and `~/.cursor/skills/slopnought-audit` |
+| Copilot CLI | Same as Claude Code |
+| Gemini CLI | Remove the config pointing to `gemini-extension.json` |
+| OpenCode | Remove the `slopnought` entry from `opencode.json` `plugin` array |
 | Pi | `pi uninstall slopnought` |
 | Antigravity | `agy plugin uninstall slopnought` |
-| Kimi Code | `/plugins uninstall slopnought` |
+| Kimi Code | Remove the plugin config pointing to `.kimi-plugin/` |
 | Factory Droid | `droid plugin uninstall slopnought` |

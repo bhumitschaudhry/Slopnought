@@ -16,24 +16,25 @@ Welcome to the Slopnought documentation. Slopnought is a code maintainability sk
 
 ## Quick start
 
-Pick your agent and run the install command:
+Pick your agent and clone the repo:
 
 ```bash
-# Claude Code
-/plugin install slopnought@claude-plugins-official
-
-# Gemini CLI
-gemini extensions install https://github.com/BhumitChaudhry/Slopnought
-
-# Kimi Code
-/plugins install https://github.com/BhumitChaudhry/Slopnought
+git clone https://github.com/BhumitChaudhry/Slopnought.git
 ```
 
-See [Installation](./installation.md) for all 11 agents, or use the universal install for any other agent:
+Then follow the agent-specific instructions in [Installation](./installation.md):
 
+```bash
+# Claude Code — copy skills into place
+cp -r Slopnought/skills/slopnought ~/.claude/skills/slopnought
+cp -r Slopnought/skills/slopnought-audit ~/.claude/skills/slopnought-audit
+
+# OpenCode — add to opencode.json plugin array
+# Pi — pi install git:github.com/BhumitChaudhry/Slopnought
+# Antigravity — cd Slopnought && bash install-agy.sh
 ```
-install this skill: https://github.com/BhumitChaudhry/Slopnought
-```
+
+See [Installation](./installation.md) for all 11 agents.
 
 ## What Slopnought does
 
