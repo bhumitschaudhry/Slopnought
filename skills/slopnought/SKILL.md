@@ -1,6 +1,6 @@
 ---
 name: slopnought
-description: Use for ANY coding task — new features, bug fixes, modules, or refactors — meant to outlive this session and be touched by others later. Two modes. Code generation mode makes new code stay understandable, extensible, testable, secure, and maintainable rather than just passing the task, enforcing architectural boundaries, consistent patterns, modular design, meaningful naming, error handling, documentation of intent, and tests, while preventing duplicated logic, context collapse, brittle shortcuts, hidden dependencies, and architecture drift. Refactoring mode exposes `/slopnought-audit`, scanning an existing codebase for architectural weaknesses, code smells, duplication, oversized files, missing tests, undocumented business logic, and security issues, then producing a prioritized remediation plan and optionally applying fixes. Trigger for production code, new features, modules/services/components, codebase review or cleanup, tech debt, or code quality — even without the word "maintainability."
+description: Makes generated code maintainable. Use for any coding task — features, bug fixes, refactors. Two modes: code generation (active by default) and `/slopnought-audit` for scanning existing codebases.
 ---
 
 # Slopnought

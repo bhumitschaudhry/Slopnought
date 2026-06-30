@@ -1,6 +1,6 @@
 ---
 name: slopnought-audit
-description: Scans an existing codebase for architectural weaknesses, code smells, duplication, oversized files, missing tests, undocumented business logic, and security issues, then produces a prioritized remediation plan and optionally applies fixes.
+description: Scans a codebase for maintainability issues and produces a prioritized remediation plan.
 ---
 
 # Codebase Refactoring Mode — `/slopnought-audit`
