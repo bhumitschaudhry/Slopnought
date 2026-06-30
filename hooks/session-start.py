@@ -19,7 +19,6 @@ with open(SKILL_FILE, "r", encoding="utf-8") as f:
 
 # Strip YAML frontmatter
 lines = skill_content.split("\n")
-in_frontmatter = False
 body_lines = []
 frontmatter_count = 0
 for line in lines:
