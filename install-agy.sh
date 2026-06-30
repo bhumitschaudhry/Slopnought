@@ -37,7 +37,7 @@ fi
 
 # Read skill content and strip YAML frontmatter
 SKILL_CONTENT=$(cat "$SKILL_FILE")
-SKILL_BODY=$(echo "$SKILL_CONTENT" | sed '1,/^---$/d' | sed '1,/^---$/d')
+SKILL_BODY=$(echo "$SKILL_CONTENT" | awk 'NR==1 && /^---$/ {fm=1; next} fm==1 && /^---$/ {fm=0; next} !fm')
 
 # Generate ANTIGRAVITY.md with bootstrap wrapped in EXTREMELY_IMPORTANT
 cat > "${STAGING_DIR}/ANTIGRAVITY.md" << BOOTSTRAP
