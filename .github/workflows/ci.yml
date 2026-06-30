@@ -35,7 +35,7 @@ jobs:
             .codex-plugin/plugin.json \
             .cursor-plugin/plugin.json \
             .kimi-plugin/plugin.json \
-            .opencode/package.json \
+            antigravity-plugin/plugin.json \
             gemini-extension.json; do
             if [ ! -f "$manifest" ]; then
               echo "::error file=$manifest::Manifest not found"
@@ -93,7 +93,8 @@ jobs:
         run: |
           echo "Checking file references in markdown..."
           while IFS= read -r md; do
-            grep -oP '\(\K[^)]+(?=\))' "$md" 2>/dev/null | grep -v 'http' | grep -v '^#' | while read -r ref; do
+            # Match markdown links [text](path) where path looks like a file reference
+            grep -oP '\[[^\]]*\]\(\K[^)]+' "$md" 2>/dev/null | grep -v 'http' | grep -v '^#' | grep -E '\.[a-zA-Z]+$|/' | while read -r ref; do
               if [ -n "$ref" ]; then
                 dir=$(dirname "$md")
                 resolved="$dir/$ref"
